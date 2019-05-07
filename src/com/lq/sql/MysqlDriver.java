@@ -15,17 +15,19 @@ public class MysqlDriver {
     protected Connection conn = null;
     protected Statement stmt = null;
     
-    public void set_db_url(String database) {
-    	db_url = "jdbc:mysql://localhost:3306/" + database + "?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT&useSSL=false";
-    }
     
-    protected void connect() {
+    protected void connect(String database) {
+    	db_url = "jdbc:mysql://localhost:3306/" + database + "?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT&useSSL=false";
       System.out.println("连接数据库...");
       try {
 			conn = DriverManager.getConnection(db_url,USER,PASS);
-      } catch (SQLException e) {
+			stmt = conn.createStatement();
+      } catch (SQLException se) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    	  System.out.println("this is error");
+			se.printStackTrace();
+      }catch(Exception e) {
+    	  e.printStackTrace();
       }
     }
     
@@ -46,36 +48,4 @@ public class MysqlDriver {
         	e.printStackTrace();
         }
     }
-//    public void execSql(String sql) {
-//    	// 执行查询
-//        try { 
-//        	// 打开链接
-//            System.out.println("连接数据库...");
-//            conn = DriverManager.getConnection(db_url,USER,PASS);
-//        	// 实例化Statement对象
-//        	stmt = conn.createStatement();
-//        	ResultSet rs = stmt.executeQuery(sql);
-//        	// 展开结果集数据库
-//            while(rs.next()){
-//                // 通过字段检索
-//                int id  = rs.getInt("id");
-//                String name = rs.getString("name");
-//                String url = rs.getString("dept_name");
-//    
-//                // 输出数据
-//                System.out.print("ID: " + id);
-//                System.out.print(", 教师姓名: " + name);
-//                System.out.print(", 所在系名: " + url);
-//                System.out.print("\n");
-//            }
-//            // 完成后关闭
-//            stmt.close();
-//            conn.close();
-//        }catch(SQLException se) {
-//        	se.printStackTrace();
-//        }catch(Exception e){
-//            // 处理 Class.forName 错误
-//            e.printStackTrace();
-//        }
-//    }
 }

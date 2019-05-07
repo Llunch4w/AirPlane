@@ -5,8 +5,7 @@ import java.sql.*;
 public class AdminSqlDriver extends MysqlDriver{
 	public boolean check(String workID,String pwd) {
 		try {	
-			connect();
-			stmt = conn.createStatement();
+			connect("admin");
 			String sql = "select workID,password from AdminLogIn";
 			ResultSet rs = stmt.executeQuery(sql);
 			// 展开结果集数据库

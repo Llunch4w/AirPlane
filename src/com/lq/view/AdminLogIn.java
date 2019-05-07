@@ -5,10 +5,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import com.lq.dynamicManage.Admin;
 
-public class AdminLogIn extends JFrame{
+public class AdminLogIn extends AdminWindow{
 	private JTextField workID = new JTextField(30);
 	private JPasswordField pwd = new JPasswordField(30);
-	private JButton makeSure = new JButton("确定");
+	private JButton makeSure = new JButton("登录");
 	public AdminLogIn(Admin admin) {
 		super("管理员登录");
 		setLayout(new FlowLayout());
@@ -23,8 +23,7 @@ public class AdminLogIn extends JFrame{
 			}
 		});
 		add(makeSure);
-		setSize(400,200);
-		setLocation(300,400);
-		setVisible(true);
+		setSize(300,400);
+		showing(400,200);
 	}
 }
