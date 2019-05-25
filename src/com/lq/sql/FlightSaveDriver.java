@@ -1,6 +1,7 @@
 package com.lq.sql;
 
 import java.sql.*;
+import com.lq.common.format.*;
 
 import com.lq.model.Flight;
 
@@ -8,14 +9,25 @@ public class FlightSaveDriver extends MysqlDriver{
 	public void save(Flight flight) {
 		try {
 			connect("common");
-			String inform = String.format("values(%s,%s,%s,%s,%s)",
-					flight.getFlightBase(),
-					flight.getFlightContainer(),flight.getFlightPrice(),
-					flight.getFlightPlace(),flight.getFlightTime());
-			String sql = "insert into flight " + inform;
+			String sql = "insert into flight " + 
+					String.format("values(%s)",
+					new FlightInsertFormat().baseFormat(flight));;
 			System.out.println(sql);
 			stmt.execute(sql);
-			
+			sql = "insert into tickets_info " + 
+					String.format("values(%s)",
+					new FlightInsertFormat().ticketFormat(flight));
+			stmt.execute(sql);
+			sql = "insert into status " + 
+					String.format("values(%s)",
+					new FlightInsertFormat().statusFormat(flight));
+			stmt.execute(sql);
+			if(flight.isTrans()) {
+				sql = "insert into transport " + 
+					String.format("values(%s)",
+					new FlightInsertFormat().transportFormat(flight));
+				stmt.execute(sql);
+			}
 		}catch(SQLException se) {
 			se.printStackTrace();
 		}catch(Exception e) {

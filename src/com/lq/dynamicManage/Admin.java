@@ -1,6 +1,8 @@
 package com.lq.dynamicManage;
 
 import com.lq.view.*;
+import com.lq.view.dynamic.DynamicManage;
+import com.lq.view.manage.AdminManage;
 import com.lq.method.*;
 import com.lq.sql.*;
 
@@ -10,22 +12,24 @@ public class Admin {
 	private String workID;
 	private String name;
 	private String password;
-	private AdminLogIn loginWindow;
-	private AdminManage manageWindow;
-	private AdminSqlDriver sqlDriver = new AdminSqlDriver();
-	private AdminMethod method;
+	private AdminWindow curWindow = null;
+//	private AdminMethod method;//优化备用
+	public void toWindow(String name) {
+		if(name.equals("login")) {
+			curWindow.close();
+			curWindow = new AdminLogIn(this);
+		}
+		else if(name.equals("base manage")) {
+			curWindow.close();
+			curWindow = new AdminManage(this);
+		}
+		else if(name.equals("dynamic manage")) {
+			curWindow.close();
+			curWindow = new DynamicManage(this);
+		}
+	}
 	public void logIn() {//Admin LogIn
-		loginWindow = new AdminLogIn(this);
+		curWindow = new AdminLogIn(this);
 	}
-	public void check(String wID,String pwd) {
-		if(sqlDriver.check(wID,pwd)) {
-			System.out.println("登录成功");
-			loginWindow.setVisible(false);
-			manageWindow = new AdminManage(this);
-		}
-		else {
-			System.out.println("账号名或密码错误");
-			JOptionPane.showMessageDialog(null,"用户名或密码错误");
-		}
-	}
+	
 }
