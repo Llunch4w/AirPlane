@@ -7,6 +7,7 @@ public class DataReadThread extends Thread{
 	public DataReadThread(DataInputStream reader) {
 		this.reader = reader;
 	}
+
 	public void run() {
 		while(true) {
 			try {

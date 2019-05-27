@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.lq.common.time.*;
 
-public class Flight {//航班
+public class Flight{//航班
 	private String id;//航班号
 	private String state = "计划";//当前状态，默认计划状态
 	private String company;//航空公司

@@ -117,6 +117,14 @@ public class DateTime {
 		return new DateTime(new_year,new_month,new_day,new_hour,new_min);
 	}
 	
+	public int sub(DateTime t) {
+		int day = this.day-t.getDay();
+		int hour = this.hour-t.getHour();
+		int min = this.min-t.getMinute();
+		int res = day*24*60 + hour*60 + min;
+		return res;
+	}
+	
 	public String toString() {
 		return String.format("%d-%02d-%02d %02d:%02d",year,month,day,hour,min );
 	}

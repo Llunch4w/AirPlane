@@ -98,20 +98,28 @@ public class FlightSearchDriver extends MysqlDriver{
 			String sql = String.format("select * from status where flightID=\"%s\"",
 					flight.getId());
 			ResultSet rs = stmt.executeQuery(sql);
-			flight.setState(rs.getString("state"));
-			flight.setTransflag(rs.getBoolean("isTrans"));
+			if(rs.next()) {				
+				flight.setState(rs.getString("states"));
+				flight.setTransflag(rs.getBoolean("isTrans"));
+			}
 			sql = String.format("select * from tickets_info where " + 
-			"flightID = \"%s\"", flight.getId());
+					"flightID = \"%s\"", flight.getId());
 			rs = stmt.executeQuery(sql);
-			flight.setKidprice(rs.getFloat("kidPrice"));
-			flight.setAdultprice(rs.getFloat("adultPrice"));
+			if(rs.next()) {				
+				flight.setKidprice(rs.getFloat("kidPrice"));
+				flight.setAdultprice(rs.getFloat("adultPrice"));
+				flight.setCapity(rs.getInt("capacity")/5);
+				flight.getContainer().setRemain(rs.getInt("remain"));
+			}
 			if(flight.isTrans()) {
 				sql = String.format("select * from transport where " + 
 						"flightID = \"%s\"", flight.getId());
 				rs = stmt.executeQuery(sql);
-				flight.setTransPoint(rs.getString("trans_place"));
-				flight.setTransArriveTime(new DateTime(rs.getTimestamp("midArvTm")));
-				flight.setTransLeaveTime(new DateTime(rs.getTimestamp("midLevTm")));
+				if(rs.next()) {				
+					flight.setTransPoint(rs.getString("trans_place"));
+					flight.setTransArriveTime(new DateTime(rs.getTimestamp("midArvTm")));
+					flight.setTransLeaveTime(new DateTime(rs.getTimestamp("midLevTm")));
+				}
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

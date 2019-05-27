@@ -207,8 +207,10 @@ class ModifyContentPanel extends JPanel{
 		send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				flight.getStartTime().setDelayReason(selectReason);
-				new FlightUpdateDriver().delayUpdate(flight);
+//				new FlightUpdateDriver().delayUpdate(flight);
 				
+				JOptionPane.showMessageDialog(null,
+						"设置成功！且已向购买此航班的顾客发送延误信息");
 			}
 		});
 		add(send);

@@ -10,6 +10,10 @@ import javax.swing.event.*;
 import com.lq.common.format.*;
 import com.lq.model.Flight;
 import com.lq.sql.*;
+import com.lq.view.common.IdSearchPanel;
+import com.lq.view.common.ListenPanel;
+import com.lq.view.common.PlaceSearchPanel;
+import com.lq.view.common.SurePanel;
 
 public class DelayPanel extends JPanel implements ListenPanel{
 	

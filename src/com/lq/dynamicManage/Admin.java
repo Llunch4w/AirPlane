@@ -4,6 +4,7 @@ import com.lq.view.*;
 import com.lq.view.dynamic.DynamicManage;
 import com.lq.view.manage.AdminManage;
 import com.lq.method.*;
+import com.lq.server.Server;
 import com.lq.sql.*;
 
 import javax.swing.JOptionPane;
@@ -13,6 +14,7 @@ public class Admin {
 	private String name;
 	private String password;
 	private AdminWindow curWindow = null;
+	private Server server;
 //	private AdminMethod method;//优化备用
 	public void toWindow(String name) {
 		if(name.equals("login")) {

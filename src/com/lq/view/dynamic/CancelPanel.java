@@ -1,6 +1,6 @@
 package com.lq.view.dynamic;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -9,6 +9,7 @@ import javax.swing.*;
 import com.lq.common.format.FlightSearchResultFormat;
 import com.lq.model.Flight;
 import com.lq.sql.*;
+import com.lq.view.common.*;
 
 public class CancelPanel extends JPanel implements ListenPanel{
 	private IdSearchPanel idSearchPanel = new IdSearchPanel();
