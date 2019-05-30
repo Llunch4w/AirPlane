@@ -50,6 +50,9 @@ public class DeletePanel extends JPanel implements ListenPanel{
 				listmode.addElement(new FlightSearchResultFormat().getFormat(f));
 			}
 		}
+		public void setResult(Flight flight) {
+			listmode.addElement(new FlightSearchResultFormat().getFormat(flight));
+		}
 	}
 	
 	private ResultPanel resultPanel = new ResultPanel();	
@@ -81,9 +84,9 @@ public class DeletePanel extends JPanel implements ListenPanel{
 			JOptionPane.showMessageDialog(null,"查询条件过多!");
 		}
 		else if(!idSearchPanel.id.equals("")) {
-			ArrayList<Flight> res = 
+			Flight res = 
 				new FlightSearchDriver().searchById_base(idSearchPanel.id);
-			if(res.isEmpty()) {
+			if(res == null) {
 				idSearchPanel.addNoResult();
 			}
 			else {

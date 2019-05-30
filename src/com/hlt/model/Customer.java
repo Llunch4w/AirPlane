@@ -8,6 +8,11 @@ public class Customer{
      String order[];
      int OrderNum;
      String type;
+     public Customer( String name,String idCard,String phoneNumber){
+    	 this.name=name;
+    	 this.idCard=idCard;
+    	 this.phoneNumber=phoneNumber;
+     }
      public void setName(String Name) {
     	 name = Name;
      } 

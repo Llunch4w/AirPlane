@@ -1,10 +1,11 @@
 package com.lq.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.lq.common.time.*;
 
-public class Flight{//航班
+public class Flight implements Serializable{//航班
 	private String id;//航班号
 	private String state = "计划";//当前状态，默认计划状态
 	private String company;//航空公司
@@ -12,12 +13,14 @@ public class Flight{//航班
 	private String building; //航站楼
 	private double kidPrice;//儿童票价
 	private double adultPrice;//成人票价
+	private double topPrice;//商务舱票价
+	private double discount;//折扣
 	private boolean isTransFlag = false;//是否中转
 	private boolean isCancelFlag = false;//是否取消
 	private String src,trans,des,week;//起点、中转、终点,周几
 	private PointTime startTime,arriveTime;	
 	private PointTime transArriveTime = null,transLeaveTime = null;
-	private FlightContainer container;//航班容器类
+	private FlightContainer container = new FlightContainer();//航班容器类
 	
 	//构造函数
 	public Flight(String _id,String _company,String _type,String bui) {
@@ -97,8 +100,12 @@ public class Flight{//航班
 		transLeaveTime = new PointTime(time);
 	}
 	
-	public void setCapity(int row) {//参数是排数还是总容量待定
-		container = new FlightContainer(row);
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+	
+	public void setTopprice(double price) {
+		this.topPrice = price;
 	}
 	
 	// 获取单属性值
@@ -130,6 +137,13 @@ public class Flight{//航班
 		return adultPrice;
 	}
 	
+	public double getTopprice() {
+		return topPrice;
+	}
+	
+	public double getDiscount() {
+		return discount;
+	}
 	public boolean isTrans() {
 		return isTransFlag;
 	}
@@ -209,122 +223,4 @@ public class Flight{//航班
 			arriveTime.delay(stayTime);
 		}
 	}
-	
-	
-	
-	
-//	public String getFlightBase() {
-//		String s = String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",id,
-//				company,planeType,building,week);
-//		return s;
-//	}
-//	public String getFlightContainer() {
-//		String s = String.format("%d,%d", container.capacity,container.remain);
-//		return s;
-//	}
-//	public String getFlightPrice() {
-//		String s = String.format("%.2f,%.2f", kidPrice,adultPrice);
-//		return s;
-//	}
-//	public String getFlightPlace() {
-//		return String.format("\"%s\",\"%s\",\"%s\"", src,trans,des);
-//	}
-//	public String getFlightTime(String name,String type) {
-//		/*
-//		 * type{"hope time","delayed time","stay time"}
-//		 * */
-//		if(name.equals("start time")) {
-//			return startTime.getFormatTime(type);
-//		}
-//		else if(name.equals("arrive time")) {
-//			return arriveTime.getFormatTime(type);
-//		}
-//		else if(name.equals("arrive transport time")) {
-//			return transArriveTime.getFormatTime(type);
-//		}
-//		else if(name.equals("leave transport time")) {
-//			return transLeaveTime.getFormatTime(type);
-//		}
-//		else {
-//			System.out.println("no this time");
-//			return "";
-//		}
-//	}
-//	public String getStringTime(String name,String type) {
-//		if(name.equals("start time")) {
-//			return startTime.toString(type);
-//		}
-//		else if(name.equals("arrive time")) {
-//			return arriveTime.toString(type);
-//		}
-//		else if(name.equals("arrive transport time")) {
-//			return transArriveTime.toString(type);
-//		}
-//		else if(name.equals("leave transport time")) {
-//			return transLeaveTime.toString(type);
-//		}
-//		else {
-//			System.out.println("no this time");
-//			return "";
-//		}
-//	}
-//	public StayTime getDelayTime(String name) {
-//		if(name.equals("start")) {
-//			return startTime.stayTime;
-//		}
-//		else if(name.equals("trans")) {
-//			return transArriveTime.stayTime;
-//		}
-//		else
-//			return null;
-//	}
-//	public String getTransStay() {//待定
-//		try {		
-//			StayTime stayTime = new StayTime(transArriveTime.preTime,
-//					transLeaveTime.preTime);
-//			return stayTime.toString();
-//		}catch(Exception e) {
-//			e.printStackTrace();
-//			return "";
-//		}
-//	}
-//	public String getFlightTime() {
-//		String s = String.format("%s,%s,%s,%s", getFlightTime("start time","hope time"),
-//				getFlightTime("arrive transport time","hope time"),
-//				getFlightTime("leave transport time","hope time"),
-//				getFlightTime("arrive time","hope time"));
-//		return s;
-//	}
-//	public String getQueryResult() {
-//		String s = String.format("%s %s %s %s %s", id,company,src,des,week);
-//		return s;
-//	}
 }
-
-
-//class Container{//航班容器
-//	public boolean[][] seats;
-//	public int row,col;
-//	public int capacity;//总容量
-//	public int remain;//剩余
-//	public Container(int _row) {
-//		row = _row;
-//		col = 10;
-//		capacity = row*col;
-//		remain = capacity;
-//		seats = new boolean[row][col];
-//	}
-//}
-
-//enum Statu{//航班状态
-//	PLANING(0),CHECKOUT(1),DELAYED(2),CANCELED(3),
-//	FLYING(4),LEISURE(5);
-//	//计划、值机、延误、取消、飞行、空闲
-//	private int value;
-//	private Statu(int value) {
-//		this.value = value;
-//	}
-//	public int value() {
-//		return value;
-//	}
-//}

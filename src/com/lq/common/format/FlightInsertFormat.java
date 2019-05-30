@@ -17,29 +17,30 @@ public class FlightInsertFormat {
 				timeStampWrapper(flight.getArriveTime().getPlanTime()));
 	}
 	public String ticketFormat(Flight flight) {
-		return String.format("%s,%d,%d,%.2f,%.2f", 
+		return String.format("%s,%d,%.2f,%.2f,%.2f,%.2f", 
 				stringWrapper(flight.getId()),
-				flight.getContainer().getCapacity(),
 				flight.getContainer().getReamin(),
+				flight.getTopprice(),
 				flight.getKidprice(),
-				flight.getAdultprice());
+				flight.getAdultprice(),
+				flight.getDiscount());
 	}
 	public String transportFormat(Flight flight) {
-		return String.format("%s,%s,%s,%s,%d,%d", 
+		return String.format("%s,%s,%s,%s,%b,%d", 
 				stringWrapper(flight.getId()),
 				stringWrapper(flight.getTransPlace()),
 				timeStampWrapper(flight.getTransArriveTime().getPlanTime()),
 				timeStampWrapper(flight.getTransLeaveTime().getPlanTime()),
-				0,
-				0);
+				flight.getTransLeaveTime().isDelayed,
+				flight.getTransLeaveTime().getStayTime().getMin());
 	}
 	public String statusFormat(Flight flight) {
-		return String.format("%s,%s,%s,%s,%b,%s", 
+		return String.format("%s,%s,%b,%b,%b", 
 				stringWrapper(flight.getId()),
 				stringWrapper(flight.getState()),
+				flight.isTrans(),
 				flight.getStartTime().isDelayed,
-				flight.isTrans(),flight.isCancel(),
-				stringWrapper(flight.getStartTime().delayReason));
+				flight.isCancel());
 	}
 	public String delayFormat(Flight flight) {
 		return String.format("%s,%d,%s", 

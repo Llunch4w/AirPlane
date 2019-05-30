@@ -26,7 +26,7 @@ public class ObjectReadThread extends Thread{
 				System.out.println(obj);
 				server.getRequest(obj);
 			}catch(Exception e) {
-				e.printStackTrace();
+				System.out.println("¶Ï¿ªÐ´Á¬½Ó");
 				this.interrupt();
 			}
 		}

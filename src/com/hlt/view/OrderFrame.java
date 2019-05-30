@@ -1,75 +1,214 @@
 package com.hlt.view;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.util.ArrayList;
 
 import javax.swing.*;
-
+import com.hlt.model.*;
+import com.lq.client.Client;
+import com.lq.common.time.DateTime;
 import com.lq.dynamicManage.User;
+import com.lq.model.*;
 
-public class OrderFrame extends JFrame{
+public class OrderFrame extends JFrame implements ActionListener{
+	
+	private Order order = new Order();//ä¿å­˜æ—¶ç”Ÿæˆå…·ä½“å¯¹è±¡
 	private User user;
-	private JButton return_but = new JButton("·µ»Ø<");
-	private JButton yes_but = new JButton("È·¶¨");
+	private Client client;
 	
-	private JPanel flightMessage_panel = new JPanel();//º½°àĞÅÏ¢Ãæ°å
-	private JButton flightMBut = new JButton("º½°àÏêÇé");
+	private Flight flight;
+	private FlightContainer container;
+	private int num=0;//è®°å½•å¢åŠ ä¹˜æœºäººæ•°ï¼Œæœ€å¤š5å
+	private int numFly=0;//è®°å½•é€‰æ‹©çš„ä¹˜æœºäººæ•°
 	
-	private JPanel  flyPerson_panel = new JPanel();//³Ë»úÈËÃæ°å
-	private JLabel  flyPerson_lab = new JLabel("³Ë»úÈË");
-	private JLabel  flyPersoninfolab = new JLabel("ÇëÈ·±£³Ë»úÈËĞÕÃûÓëÖ¤¼şĞÅÏ¢ÕıÈ·");
+	private JButton but_return = new JButton("è¿”å›");
+	private JButton but_yes = new JButton("é¢„å®š");
+	private JLabel  lab_info = new JLabel("â€”â€”â€”â€”é‡‘ç‰ŒæœåŠ¡Â·å‡ºè¡Œä¿éšœâ€”â€”â€”â€”");
 	
-	private JPanel  flyPerson_panel2 = new JPanel();//³Ë»úÈËÃæ°å
-	private JButton addflyPersonBut = new JButton("ĞÂÔö");//ĞÂÔö³Ë»úÈË
-	private JLabel chooseFlyPerson = new JLabel("Ñ¡Ôñ³Ë»úÈË");
-	private JLabel rNameLab =new JLabel   ("ĞÕ      Ãû:");
-	private JLabel idCardLab = new JLabel ("Éí·İÖ¤ºÅ:");
-	private JLabel phoneNumLab =new JLabel("ÊÖ  »ú ºÅ:");
-	private JTextField rNameText = new JTextField(20);//ĞÕÃûÌõ
-	private JTextField idCardText= new JTextField(20); //Éí·İÖ¤Ìõ
-	private JTextField phoneNumText= new JTextField(20); //ÊÖ»úºÅÌõ
-	private JButton load_but = new JButton("±£´æ");
 	
-	private JButton pay_but = new JButton("È¥¸¶¿î");//¸¶¿î
-	public OrderFrame(User user){
-		this.user = user;
-		add(return_but);
-		add(yes_but);
-		return_but.setBounds(5, 5, 80, 30);
-		yes_but.setBounds(505, 5, 60, 30);
+	private JPanel pan_north = new JPanel();//èˆªç­ä¿¡æ¯é¢æ¿
+	private JButton but_specific = new JButton("èˆªç­è¯¦æƒ…");
+	private JLabel  lab_time = new JLabel("2019å¹´6æœˆ21æ—¥");
+	private JLabel  lab_startTime = new JLabel("10:25å‡ºå‘");
+	private JLabel  lab_place = new JLabel("é•¿æ˜¥-éƒ‘å·");
+	private JLabel  lab_flightCom = new JLabel("ä¸œæ–¹èˆªç©ºG1422");
+	
+	private JPanel  pan_center = new JPanel();//ä¹˜æœºäººé¢æ¿
+	private JLabel  flyPerson_lab = new JLabel("ä¹˜æœºäºº");
+	private JLabel  flyPersoninfolab = new JLabel("è¯·ç¡®ä¿ä¹˜æœºäººå§“åä¸è¯ä»¶ä¿¡æ¯æ­£ç¡®");
+	private JCheckBox cb_flyPerson []= new JCheckBox[10];
+	
+	
+	private JPanel pan_ticket = new JPanel();//ç¥¨é¢æ¿ï¼Œä»·æ ¼åº§ä½
+	private JLabel lab_discount = new JLabel("æŠ˜æ‰£: 3æŠ˜");
+	private JLabel lab_price = new JLabel("Â¥450");
+	private JLabel lab_type = new JLabel("ç»æµèˆ±");
+	private JLabel lab_customerType = new JLabel("ä¹˜å®¢ç±»å‹");
+	private String[] list = {"æˆäºº","å„¿ç«¥","å­¦ç”Ÿ"};//æ ¹æ®èº«ä»½è¯å·åˆ°ç°åœ¨çš„å¹´é¾„è‡ªåŠ¨é€‰å®š
+	private JButton but_seat = new JButton("åº§ä½");
+	private JButton but_seatId = new JButton("åº§ä½å·:");
+	
+	private JComboBox cb_type = new JComboBox(list);
+	
+	
+	private JPanel  flyPerson_panel2 = new JPanel();//ä¹˜æœºäººé¢æ¿
+	private JButton addflyPersonBut = new JButton("æ–°å¢");//æ–°å¢ä¹˜æœºäºº
+	private JLabel chooseFlyPerson = new JLabel("é€‰æ‹©ä¹˜æœºäºº");
+	private JLabel rNameLab =new JLabel   ("å§“      å:");
+	private JLabel idCardLab = new JLabel ("èº«ä»½è¯å·:");
+	private JLabel phoneNumLab =new JLabel("æ‰‹  æœº å·:");
+	private JTextField rNameText = new JTextField(20);//å§“åæ¡
+	private JTextField idCardText= new JTextField(20); //èº«ä»½è¯æ¡
+	private JTextField phoneNumText= new JTextField(20); //æ‰‹æœºå·æ¡
+	private JButton but_load = new JButton("ä¿å­˜");
+	
+	
+	private JPanel  pan_south = new JPanel();//ä¹˜æœºäººé¢æ¿
+	private JButton pay_but = new JButton("å»ä»˜æ¬¾");//ä»˜æ¬¾
+	
+	private ArrayList<Ticket> mayTicket = new ArrayList<Ticket>();
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==but_yes) {
+			order = new Order();
+			order.setPlaneID(flight.getId());
+			order.setFlyPersonNum(numFly);
+			order.setUserID(user.getID());
+			for(Ticket t:mayTicket) {
+				t.setDiscount(flight.getDiscount());
+				t.setPlaneID(flight.getId());
+			}
+			order.setTicket(mayTicket);
+			order.commit();
+			client.sendOrder(order);
+			JOptionPane.showMessageDialog(null, "é¢„è®¢æˆåŠŸ");
+		}
+		else if(e.getSource()==addflyPersonBut) {
+			pan_center.setVisible(false);
+		    flyPerson_panel2.setVisible(true);
+		    flyPerson_panel2.setBounds(5,210,375,100);
+		    add(flyPerson_panel2);
+		}
+		else if(e.getSource()==but_seat) {
+	    	
+			SeatFrame seat = new SeatFrame(flight,order);
+			
+			int i = seat.getSeatId();
+			but_seatId.setText(String.valueOf(i));
+		}  
+		else if(e.getSource()==but_load) {		
+			if(num<5) {
+				num++;
+				String name = rNameText.getText();
+				String idCard = idCardText.getText();
+				String phoneNum = phoneNumText.getText();
+				Ticket ticket = new Ticket(name,idCard,phoneNum);//æ–°å¢ä¹˜æœºäºº
+				mayTicket.add(ticket);
+				cb_flyPerson[num] = new JCheckBox(name);
+				pan_center.add(cb_flyPerson[num]);
+				rNameText.setText(null);
+				idCardText.setText(null);
+				phoneNumText.setText(null);
+				pan_center.setVisible(true);
+				flyPerson_panel2.setVisible(false);
+				
+				//è®¢å•ç±»å¢åŠ ä¹˜æœºäººåˆ°æ•°æ®åº“ä¸­
+			}
+		}
+		else if(e.getSource() == but_return) {
+			dispose();
+		}
 		
+	}
+	public void onCheckChanged(boolean isChecked) {
+	    if(isChecked) 
+			order.setFlyPersonNum(++numFly);
+	
+	}
+	public void setActionListener() {
+		//ç›‘å¬é¢„è®¢
+		but_yes.addActionListener(this);
+		//ç›‘å¬åº§ä½
+		but_seat.addActionListener(this); 
+		//ç›‘å¬è¿”å›
+//	    new ReturnButton(but_return,flyPerson_panel2,pan_center);
+		but_return.addActionListener(this);
+		//ç›‘å¬å¢åŠ ä¹˜æœºäºº
+		addflyPersonBut.addActionListener(this);	
+		//ç›‘å¬ä¿å­˜
+		but_load.addActionListener(this);
+		for(int i=0;i<num;i++) {
+			cb_flyPerson[i].addActionListener(this);
+		}
 		
-		setLayout(new BorderLayout());
+	}
+	 public void setTicketPanel() {
+		lab_discount.setText(String.format("%.2fæŠ˜", flight.getDiscount()));
+		lab_price.setText(String.format("Â¥%.2f", flight.getAdultprice()));
+		pan_ticket.add(lab_type);
+		pan_ticket.add(lab_price);
+		pan_ticket.add(lab_discount);
+		pan_ticket.add(lab_customerType);
+		pan_ticket.add(cb_type);
+		pan_ticket.add(but_seat);
+		pan_ticket.add(but_seatId);
+		but_seatId.setContentAreaFilled(false);
+		but_seatId.setEnabled(true);
+	}	
+	 
+	public void setNorthPanel() {
+		//èµ‹å€¼
+		DateTime t = flight.getStartTime().getPlanTime();
+		lab_time.setText(String.format("%då¹´%dæœˆ%dæ—¥",
+					t.getYear(),t.getMonth(),t.getDay()));
+		lab_startTime.setText(String.format("%d:%då‡ºå‘",t.getHour(),
+				t.getMinute()));
+		lab_place.setText(String.format("%s--%s", flight.getTakeoffPlace(),
+				flight.getArrivePlace()));
+		lab_flightCom.setText(String.format("%s%s",
+				flight.getCompany(),flight.getId()));
 		
-		
-		add(flightMessage_panel,BorderLayout.NORTH);
-		flightMessage_panel.add(flightMBut);
-		//flightMessage_panel.setLayout(null);
-		flightMessage_panel.setBounds(5, 5, 60, 30);
-		//flightMessage_panel.setBounds();
-		
-		add(flyPerson_panel,BorderLayout.CENTER);
-		flyPerson_panel.add(addflyPersonBut);//ĞÂÔö
-		addflyPersonBut.setContentAreaFilled(false);//°´Å¥ÉèÖÃÎªÍ¸Ã÷
-		//addflyPersonBut.setBorderPainted(false);//°´Å¥È¥µô±ß¿ò
-		flyPerson_panel.add(chooseFlyPerson);//Ñ¡Ôñ³Ë»úÈË
-	//
-		
-		
-		
-		flyPerson_panel2.setBorder(BorderFactory.createLoweredBevelBorder());//ÉèÖÃÃæ°å±ß¿ò°¼Ïİ
+		pan_north.setBorder(BorderFactory.createLoweredBevelBorder());//è®¾ç½®è¾¹æ¡†å‡¹é™·
+	 	pan_north.setLayout(null);
+		pan_north.add(but_specific);
+		pan_north.add(lab_time);
+		pan_north.add(lab_startTime);
+		pan_north.add(lab_place);
+		pan_north.add(lab_flightCom);
+		//è®¾ç½®ä½ç½®å¤§å°
+		but_specific.setBounds(280,5,90,30);
+		lab_time.setBounds(5, 5, 100, 40);
+		lab_startTime.setBounds(100, 5, 100, 40);
+		lab_place.setBounds(5, 30, 100, 40);
+		lab_flightCom.setBounds(5, 55, 100, 40);
+		//è®¾ç½®å­—ä½“
+		Font font = new Font("å®‹ä½“",Font.BOLD,18);
+		lab_place.setFont(font);	
+//		lab_info.setFont(font);
+		//èˆªç­è¯¦æƒ…æŒ‰é’®
+	}
+	public void setCenterPanel() {
+		pan_center.setBorder(BorderFactory.createLoweredBevelBorder());
+		pan_center.add(addflyPersonBut);//æ–°å¢
+		addflyPersonBut.setContentAreaFilled(false);//æŒ‰é’®è®¾ç½®ä¸ºé€æ˜
+		//addflyPersonBut.setBorderPainted(false);//æŒ‰é’®å»æ‰è¾¹æ¡†
+		pan_center.add(chooseFlyPerson);//é€‰æ‹©ä¹˜æœºäºº
+		setFlyPersonPanel();
+	}
+	public void setFlyPersonPanel() {
+		flyPerson_panel2.setBorder(BorderFactory.createLoweredBevelBorder());//è®¾ç½®é¢æ¿è¾¹æ¡†å‡¹é™·
 		flyPerson_panel2.setVisible(false);
-		flyPerson_panel2.setSize(400,200);
+		flyPerson_panel2.setLayout(null);
 		flyPerson_panel2.add(rNameLab);
 		flyPerson_panel2.add(rNameText);
 		flyPerson_panel2.add(idCardLab);
 		flyPerson_panel2.add(idCardText);
 		flyPerson_panel2.add(phoneNumLab);
 		flyPerson_panel2.add(phoneNumText);
-		flyPerson_panel2.add(load_but);
-		flyPerson_panel2.setLayout(null);
-		Rectangle r = new Rectangle(55,5,100,20);
-		Rectangle r1 = new Rectangle(165,5,200,20);
+		flyPerson_panel2.add(but_load);
+		Rectangle r = new Rectangle(25,5,100,20);
+		Rectangle r1 = new Rectangle(105,5,200,20);
 		rNameLab.setBounds(r);
 		rNameText.setBounds(r1);
 		r.y+=30;r1.y+=30;
@@ -78,52 +217,49 @@ public class OrderFrame extends JFrame{
 		r.y+=30;r1.y+=30;
 		phoneNumLab.setBounds(r);
 		phoneNumText.setBounds(r1);
-		load_but.setBounds(200, 90, 60, 30);
-		//¼àÌı·µ»Ø
-		return_but.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(e.getSource()==return_but)
-					if(flyPerson_panel2.getVisibleRect().equals(true))
-						{flyPerson_panel2.setVisible(false);
-				        flyPerson_panel.setVisible(true);}
-					else {
-						dispose();
-//						new MainFrame();
-						user.toWindow("main menu");
-					}
-			}
-			
-			}
-		);
-		//¼àÌıÔö¼Ó³Ë»úÈË
-		addflyPersonBut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(e.getSource()==addflyPersonBut)
-					flyPerson_panel.setVisible(false);
-				    flyPerson_panel2.setVisible(true);	
-				    add(flyPerson_panel2,BorderLayout.CENTER);
-					
-			}
-		});
-		//¼àÌı±£´æ
-		load_but.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(e.getSource()==load_but)
-					flyPerson_panel.setVisible(false);
-				    flyPerson_panel2.setVisible(true);	
-				    add(flyPerson_panel2,BorderLayout.CENTER);
-					
-			}
-		});
-		pack();
+		but_load.setBounds(310, 65, 60, 20); 
+		
+	}
+	public void setSouthPanel() {
+		pan_south.setLayout(null);
+		pan_south.add(but_return);
+		pan_south.add(but_yes);
+		but_return.setBounds(205, 5, 80, 30);
+		but_yes.setBounds(75, 5, 80, 30);
+	}
+	public OrderFrame(Flight plant,User user){
+		this.flight=plant;
+		this.user = user;
+		this.client = user.getClient();
+		setLayout(null);
+		add(pan_north);
+		add(pan_center);
+		add(pan_south);
+		add(pan_ticket);
+		add(lab_info);
+		pan_north.setBounds(5,5,375,200);//è®¾ç½®é¢æ¿å¤§å°
+		pan_center.setBounds(5,210,375,100);
+	    pan_south.setBounds(5, 450, 375, 100);
+	    pan_ticket.setBounds(5,310, 375, 100);
+	    lab_info.setBounds(85, 410, 300, 30);
+	    setNorthPanel();
+	    setCenterPanel();
+	    setSouthPanel() ;
+	    setTicketPanel();
+	    setActionListener();
 		setLocation(600,400);
-		setSize(600,300);
-		setVisible(true);
+		setSize(400,600);
+		setVisible(true); 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("¶©µ¥");
+		setTitle("è®¢å•");
 	}
 	
 //	public static void main(String[] args) {
-//		new OrderFrame();
+//		Flight plant = new Flight();
+////		plant.setSeat(false, 1);
+////		plant.setSeat(false, 10);
+////		plant.setSeat(false, 40);
+//		Order order = new Order();
+//		new OrderFrame(plant,order);
 //	}
 }

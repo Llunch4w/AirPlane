@@ -1,13 +1,17 @@
 package com.lq.common.time;
 
+import java.io.Serializable;
 import java.sql.Time;
 
 import com.lq.model.Flight;
 
-public class StayTime {
+public class StayTime implements Serializable{
 	private int min;
 	public StayTime(int h,int m) {
 		min = h*60 + m;
+	}
+	public StayTime(int min) {
+		this.min = min;
 	}
 	public int getHours() {
 		return min/60;

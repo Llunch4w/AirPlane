@@ -11,22 +11,25 @@ public class FlightSaveDriver extends MysqlDriver{
 			connect("common");
 			String sql = "insert into flight " + 
 					String.format("values(%s)",
-					new FlightInsertFormat().baseFormat(flight));;
+					new FlightInsertFormat().baseFormat(flight));
 			System.out.println(sql);
 			stmt.execute(sql);
 			sql = "insert into tickets_info " + 
 					String.format("values(%s)",
 					new FlightInsertFormat().ticketFormat(flight));
 			stmt.execute(sql);
+			System.out.println(sql);
 			sql = "insert into status " + 
 					String.format("values(%s)",
 					new FlightInsertFormat().statusFormat(flight));
+			System.out.println(sql);
 			stmt.execute(sql);
 			if(flight.isTrans()) {
 				sql = "insert into transport " + 
 					String.format("values(%s)",
 					new FlightInsertFormat().transportFormat(flight));
 				stmt.execute(sql);
+				System.out.println(sql);
 			}
 		}catch(SQLException se) {
 			se.printStackTrace();

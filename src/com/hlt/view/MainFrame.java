@@ -99,7 +99,8 @@ public class MainFrame extends JFrame{
 
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource()==btn_user) {
-					
+					dispose();
+					user.toWindow("user page");
 				}
 				
 			}

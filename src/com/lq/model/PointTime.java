@@ -1,9 +1,11 @@
 package com.lq.model;
 
+import java.io.Serializable;
+
 import com.lq.common.time.DateTime;
 import com.lq.common.time.StayTime;
 
-public class PointTime{//航线途经地点的时间
+public class PointTime implements Serializable{//航线途经地点的时间
 	public DateTime planTime;//计划时间
 	public DateTime realTime;//实际时间
 	public StayTime stayTime;//停留时间(延误时间)

@@ -61,13 +61,23 @@ class BasePanel extends JPanel{
 	
 	private class TransPanel extends JPanel{
 		public boolean isTrans;
+		public JLabel transPlace;
+		public JLabel arriveTime;
+		public JLabel leaveTime;
 		public TransPanel(boolean isTrans) {
 			this.isTrans = isTrans;
-			setBounds(0,120,400,40);
+			setBounds(0,120,400,80);
 			if(isTrans == true) {
-				add(new JLabel("中转：" + flight.getTransPlace()));
-				add(new JLabel("中转到达时间：" + flight.getTransArriveTime().getPlanTime()));
-				add(new JLabel("中转起飞时间：" + flight.getTransLeaveTime().getPlanTime()));
+				setLayout(null);
+				transPlace = new JLabel("中转地：" + flight.getTransPlace());
+				arriveTime = new JLabel("中转到达时间：" + flight.getTransArriveTime().getPlanTime());
+				leaveTime = new JLabel("中转起飞时间：" + flight.getTransLeaveTime().getPlanTime());	
+				add(transPlace);
+				add(arriveTime);
+				add(leaveTime);
+				transPlace.setBounds(60,0,100,20);
+				arriveTime.setBounds(60,25,400,20);
+				leaveTime.setBounds(60,50,400,20);
 			}
 			else {
 				add(new JLabel("无中转"));
@@ -77,15 +87,17 @@ class BasePanel extends JPanel{
 	
 	private class PricePanel extends JPanel{
 		public PricePanel() {
-			setBounds(0,160,400,40);
-			add(new JLabel("成人票价：" + flight.getAdultprice()));
-			add(new JLabel("儿童票价：" + flight.getKidprice()));
+			setBounds(0,200,400,40);
+			add(new JLabel("成人：" + flight.getAdultprice()));
+			add(new JLabel("儿童：" + flight.getKidprice()));
+			add(new JLabel("商务舱：" + flight.getTopprice()));
+			add(new JLabel("折扣：" + flight.getDiscount() + "折"));
 		}
 	}
 	
 	private class CapacityPanel extends JPanel{
 		public CapacityPanel() {
-			setBounds(0,200,400,40);
+			setBounds(0,240,400,40);
 			int capacity = flight.getContainer().getCapacity();
 			int remain = flight.getContainer().getReamin();
 			add(new JLabel("总容量：" + capacity));
@@ -95,8 +107,8 @@ class BasePanel extends JPanel{
 			btn.setSize(40,20);
 			btn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					SeatDetail seatDetail = new SeatDetail();
-					seatDetail.showing(400, 400);
+					SeatDetail seatDetail = new SeatDetail(flight);
+					seatDetail.showing(530,500);
 				}
 			});
 			add(btn);
@@ -111,7 +123,7 @@ class BasePanel extends JPanel{
 	private CapacityPanel capacityLayer;
 	public BasePanel(Flight flight) {
 		this.flight = flight;
-		setBounds(0,0,400,240);
+		setBounds(0,0,400,300);
 		setLayout(null);
 		firstLayer = new FirstPanel();
 		secondLayer = new SecondPanel();

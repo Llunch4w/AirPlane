@@ -115,6 +115,7 @@ public class RegistFrame extends JFrame {
 											passText.getText(),idCardText.getText(),
 											nameText.getText(),phoneNumText.getText());
 							client.sendNewUser(newUser);
+							user.setID(idText.getText());
 							JOptionPane.showMessageDialog(null,"×¢²á³É¹¦£¡");
 							dispose();
 							user.toWindow("main menu");

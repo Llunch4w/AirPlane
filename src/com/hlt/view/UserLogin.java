@@ -44,6 +44,7 @@ public class UserLogin extends JFrame
 					LoginRequest req = new LoginRequest(tname,tpass);
 					if(client.sendYONq(req))
 					{
+						user.setID(tname);
 						infolab.setText("µÇÂ¼³É¹¦£¡");
 						/*frame.*/dispose();
 //					    new MainFrame();

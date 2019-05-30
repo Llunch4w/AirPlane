@@ -18,7 +18,7 @@ public class CancelPanel extends JPanel implements ListenPanel{
 	class ResultPanel extends JPanel{
 		public DefaultListModel listmode = new DefaultListModel();
 		public JList result = new JList(listmode);
-		public JButton deleteBtn = new JButton("删除");
+		public JButton deleteBtn = new JButton("取消");
 		public ResultPanel() {
 			add(new JLabel("搜索结果:"));
 			result.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -36,9 +36,9 @@ public class CancelPanel extends JPanel implements ListenPanel{
 							"确定要取消以下航班吗？\n" + msg, "注意",
 							JOptionPane.YES_NO_OPTION);//返回0表示选是
 					if(flag == 0) {
-						new FlightDeleteDriver().deleteAll(flights);
+//						new FlightDeleteDriver().deleteAll(flights);
 						//socket通知客户
-						
+						new FlightUpdateDriver().cancleUpdate(flights);
 						JOptionPane.showMessageDialog(null,
 								"取消成功!并已通知所有购买此次航班的乘客");
 					}
@@ -50,6 +50,9 @@ public class CancelPanel extends JPanel implements ListenPanel{
 			for(Flight f:flights) {			
 				listmode.addElement(new FlightSearchResultFormat().getFormat(f));
 			}
+		}
+		public void setResult(Flight flight) {
+			listmode.addElement(new FlightSearchResultFormat().getFormat(flight));
 		}
 	}
 	
@@ -82,9 +85,9 @@ public class CancelPanel extends JPanel implements ListenPanel{
 			JOptionPane.showMessageDialog(null,"查询条件过多!");
 		}
 		else if(!idSearchPanel.id.equals("")) {
-			ArrayList<Flight> res = 
+			Flight res = 
 				new FlightSearchDriver().searchById_base(idSearchPanel.id);
-			if(res.isEmpty()) {
+			if(res == null) {
 				idSearchPanel.addNoResult();
 			}
 			else {

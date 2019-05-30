@@ -6,19 +6,20 @@ import java.util.ArrayList ;
 import com.lq.common.time.DateTime;
 import com.lq.common.time.StayTime;
 import com.lq.model.Flight;
+import com.lq.model.FlightContainer;
 
 public class FlightSearchDriver extends MysqlDriver{
-	public ArrayList<Flight> searchById_base(String flightId) {
-		ArrayList<Flight> results = new ArrayList<Flight>();
+	public Flight searchById_base(String flightId) {
+		Flight flight = null;
 		try {
 			connect("common");
 			String sql = String.format("select * from flight where flightID=\"%s\"", 
 					flightId);
 			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()){
+			if(rs.next()){
 				// 通过字段检索
-				Flight flight = new Flight(rs.getString("flightID"),
+				flight = new Flight(rs.getString("flightID"),
 						rs.getString("company"),rs.getString("planeType"),
 						rs.getString("building"));		
 				flight.setWeek(rs.getString("week"));
@@ -26,14 +27,13 @@ public class FlightSearchDriver extends MysqlDriver{
 				flight.setDesPoint(rs.getString("arrive_place"));
 				flight.setStartTime(new DateTime(rs.getTimestamp("takeOff_time")));
 				flight.setArriveTime(new DateTime(rs.getTimestamp("arrive_time")));			
-				results.add(flight);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
 			close();
 		}
-		return results;
+		return flight;
 	}
 	
 	public ArrayList<Flight> searchByPlace_base(String src,String des){
@@ -95,22 +95,42 @@ public class FlightSearchDriver extends MysqlDriver{
 	public void addDetail(Flight flight) {
 		try {
 			connect("common");
+			//状态信息
 			String sql = String.format("select * from status where flightID=\"%s\"",
 					flight.getId());
 			ResultSet rs = stmt.executeQuery(sql);
 			if(rs.next()) {				
-				flight.setState(rs.getString("states"));
+				flight.setState(rs.getString("state"));
 				flight.setTransflag(rs.getBoolean("isTrans"));
+				flight.setCancelflag(rs.getBoolean("isCancel"));
+				flight.getStartTime().isDelayed = rs.getBoolean("isStartDelay");
 			}
+			System.out.println("sql:"+flight.isTrans());
+			//票信息
 			sql = String.format("select * from tickets_info where " + 
 					"flightID = \"%s\"", flight.getId());
 			rs = stmt.executeQuery(sql);
+			FlightContainer container = flight.getContainer();
 			if(rs.next()) {				
 				flight.setKidprice(rs.getFloat("kidPrice"));
 				flight.setAdultprice(rs.getFloat("adultPrice"));
-				flight.setCapity(rs.getInt("capacity")/5);
-				flight.getContainer().setRemain(rs.getInt("remain"));
+				flight.setTopprice(rs.getFloat("topPrice"));
+				container.setRemain(rs.getInt("remain"));
 			}
+			//座位信息
+			sql = String.format("select * from normal_seats where " + 
+					"flightID = \"%s\"", flight.getId());
+			rs = stmt.executeQuery(sql);
+			while(rs.next()) {				
+				container.setNormalSeat(rs.getInt("i"), rs.getInt("j"), true);
+			}
+			sql = String.format("select * from top_seats where " + 
+					"flightID = \"%s\"", flight.getId());
+			rs = stmt.executeQuery(sql);
+			while(rs.next()) {				
+				container.setTopSeat(rs.getInt("loc"), true);
+			}
+			//中转信息
 			if(flight.isTrans()) {
 				sql = String.format("select * from transport where " + 
 						"flightID = \"%s\"", flight.getId());
@@ -119,6 +139,18 @@ public class FlightSearchDriver extends MysqlDriver{
 					flight.setTransPoint(rs.getString("trans_place"));
 					flight.setTransArriveTime(new DateTime(rs.getTimestamp("midArvTm")));
 					flight.setTransLeaveTime(new DateTime(rs.getTimestamp("midLevTm")));
+				}
+			}
+			//延误信息
+			if(flight.getStartTime().isDelayed) {
+				sql = String.format("select * from startDelay where " + 
+						"flightID = \"%s\"", flight.getId());
+				rs = stmt.executeQuery(sql);
+				if(rs.next()) {
+					flight.getStartTime().setDelayReason(
+							rs.getString("delayReason"));
+					flight.startDelay(new StayTime(
+							rs.getInt("delayTime")));
 				}
 			}
 		}catch(Exception e) {

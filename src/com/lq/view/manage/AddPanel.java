@@ -3,6 +3,7 @@ package com.lq.view.manage;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.*;
 
@@ -11,6 +12,7 @@ import com.lq.common.time.StayTime;
 import com.lq.model.Flight;
 import com.lq.sql.FlightSaveDriver;
 import com.lq.sql.PlaceSqlDriver;
+import com.lq.exception.*;
 
 
 public class AddPanel extends JPanel{
@@ -76,9 +78,9 @@ public class AddPanel extends JPanel{
 			for(String s:array) {
 				box.addItem(s);
 			}
-			start = array.get(0);
-			mid = array.get(0);
-			end = array.get(0);
+			start = "";
+			mid = "";
+			end = "";
 		}
 		
 		private void init() {//下拉选项框的值先准备好,并添加监听事件
@@ -152,27 +154,27 @@ public class AddPanel extends JPanel{
 			try {				
 				year = Integer.parseInt(yearField.getText());
 			}catch(Exception e) {
-				year = 1970;
+				year = new Date().getYear();
 			}
 			try {				
 				month = Integer.parseInt(monthField.getText());
 			}catch(Exception e) {
-				month = 1;
+				month = new Date().getMonth();
 			}
 			try {				
 				day = Integer.parseInt(dayField.getText());
 			}catch(Exception e) {
-				day = 1;
+				day = new Date().getDay();
 			}
 			try {				
 				hour = Integer.parseInt(hourField.getText());
 			}catch(Exception e) {
-				hour = 10;
+				hour = 0;
 			}
 			try {				
 				min = Integer.parseInt(minField.getText());
 			}catch(Exception e) {
-				min = 10;
+				min = 0;
 			}
 			dateTime = new DateTime(year,month,day,hour,min);
 			stayTime = new StayTime(day*24+hour,min);
@@ -185,9 +187,10 @@ public class AddPanel extends JPanel{
 	
 	
 	private class PriceLayer extends JPanel{
-		public double kidPrice,adultPrice;
-		public JTextField kidText = new JTextField(8);
-		public JTextField adultText = new JTextField(8);
+		public double kidPrice,adultPrice,topPrice;
+		public JTextField kidText = new JTextField(5);
+		public JTextField adultText = new JTextField(5);
+		public JTextField topText = new JTextField(5);
 
 		public PriceLayer() {
 			setPreferredSize(new Dimension(500,30));
@@ -196,12 +199,15 @@ public class AddPanel extends JPanel{
 			add(adultText);
 			add(new JLabel("儿童票价："));
 			add(kidText);
+			add(new JLabel("商务舱票价："));
+			add(topText);
 		}
 		
 		public void commit() {
 			try {				
 				kidPrice = Double.parseDouble(kidText.getText());
 				adultPrice = Double.parseDouble(adultText.getText());
+				topPrice = Double.parseDouble(topText.getText());
 			}catch(Exception e) {
 				JOptionPane.showMessageDialog(null,"票价应该是数字！");
 			}
@@ -210,43 +216,39 @@ public class AddPanel extends JPanel{
 		public void textClear() {
 			kidText.setText("");
 			adultText.setText("");
+			topText.setText("");
 		}
 	}
 	private PriceLayer priceLayer = new PriceLayer();
 	
-	private class CapityLayer extends JPanel{
-		public int capity,remain,row;
-		public JTextField capityText = new JTextField(3);
-		public JTextField remainText = new JTextField(3);
-		public JTextField rowText = new JTextField(3);
-		public CapityLayer() {
+	private class DiscountLayer extends JPanel{
+		public double discount;
+		public JTextField countText = new JTextField(3);
+		public DiscountLayer() {
 			setPreferredSize(new Dimension(500,30));
 			setLayout(new FlowLayout());
-			add(new JLabel("总座位数："));
-			add(capityText);
-			add(new JLabel("剩余座位数："));
-			add(remainText);
-			add(new JLabel("座位排数："));
-			add(rowText);
+			add(new JLabel("折扣："));
+			add(countText);
 		}
 		
-		public void commit() {
+		public void commit() {		
 			try {				
-				capity = Integer.parseInt(capityText.getText());
-				remain = Integer.parseInt(remainText.getText());
-				row = Integer.parseInt(rowText.getText());
+				discount = Double.parseDouble(countText.getText());
+				if(discount > 10 || discount < 0) {
+					throw new NotRangeException();
+				}
+			}catch(NotRangeException e) {
+				JOptionPane.showMessageDialog(null, "折扣不在合法范围内!");
 			}catch(Exception e) {
-				JOptionPane.showMessageDialog(null,"容量应该是整数！");
+				JOptionPane.showMessageDialog(null, "折扣输入不合法!");
 			}
 		}
 		
 		public void textClear() {
-			capityText.setText("");
-			remainText.setText("");
-			rowText.setText("");
+			countText.setText("");
 		}
 	}
-	private CapityLayer capityLayer = new CapityLayer();	
+	private DiscountLayer countLayer = new DiscountLayer();	
 	private JButton makeSure = new JButton("确定");
 	public AddPanel() {	
 		setLayout(new FlowLayout());
@@ -257,7 +259,7 @@ public class AddPanel extends JPanel{
 		add(transLeaveTimeLayer);
 		add(endTimeLayer);
 		add(priceLayer);
-		add(capityLayer);
+		add(countLayer);
 		makeSure.addActionListener(new ActionListener() {//点击按钮后提交数据给数据库
 			public void actionPerformed(ActionEvent e) {
 				firstLayer.commit();
@@ -267,17 +269,18 @@ public class AddPanel extends JPanel{
 				transLeaveTimeLayer.commit();
 				endTimeLayer.commit();
 				priceLayer.commit();
-				capityLayer.commit();
+				countLayer.commit();
 				Flight flight = new Flight(firstLayer.id,firstLayer.company,
 						firstLayer.type,firstLayer.building);
 				flight.setKidprice(priceLayer.kidPrice);
 				flight.setAdultprice(priceLayer.adultPrice);
+				flight.setTopprice(priceLayer.topPrice);
 				flight.setStartTime(startTimeLayer.dateTime);
 				flight.setArriveTime(endTimeLayer.dateTime);
 				flight.setWeek(secondLayer.week);
 				flight.setSrcPoint(secondLayer.start);
 				flight.setDesPoint(secondLayer.end);
-				flight.setCapity(capityLayer.row);
+				flight.setDiscount(countLayer.discount);
 				if(!secondLayer.mid.equals("")) {
 					flight.setTransflag(true);
 					flight.setTransPoint(secondLayer.mid);
@@ -300,7 +303,7 @@ public class AddPanel extends JPanel{
 				System.out.println("终点:" + secondLayer.end);
 				System.out.println("儿童票价:" + priceLayer.kidPrice);
 				System.out.println("成人票价:" + priceLayer.adultPrice);
-				System.out.println("容量:" + capityLayer.capity);
+				System.out.println("折扣:" + countLayer.discount);
 			}
 		});
 		add(makeSure);
@@ -313,6 +316,6 @@ public class AddPanel extends JPanel{
 		transLeaveTimeLayer.textClear();
 		endTimeLayer.textClear();
 		priceLayer.textClear();
-		capityLayer.textClear();	
+		countLayer.textClear();	
 	}
 }

@@ -39,7 +39,7 @@ public class SearchPanel extends JPanel implements ListenPanel{
 							String[] temp = tmp_s.split(" ");
 							FlightSearchDriver driver = new FlightSearchDriver();
 							Flight flight = driver
-									.searchById_base(temp[0]).get(0);
+									.searchById_base(temp[0]);
 							driver.addDetail(flight);
 							
 							FlightDetail detailPage = new FlightDetail(flight);
@@ -56,6 +56,9 @@ public class SearchPanel extends JPanel implements ListenPanel{
 			for(Flight f:flights) {			
 				listmode.addElement(new FlightSearchResultFormat().getFormat(f));
 			}
+		}
+		public void setResult(Flight flight) {
+			listmode.addElement(new FlightSearchResultFormat().getFormat(flight));
 		}
 	}
 	
@@ -88,9 +91,9 @@ public class SearchPanel extends JPanel implements ListenPanel{
 			JOptionPane.showMessageDialog(null,"查询条件过多!");
 		}
 		else if(!idSearchPanel.id.equals("")) {
-			ArrayList<Flight> res = 
+			Flight res = 
 				new FlightSearchDriver().searchById_base(idSearchPanel.id);
-			if(res.isEmpty()) {
+			if(res == null) {
 				idSearchPanel.addNoResult();
 			}
 			else {

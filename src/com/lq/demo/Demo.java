@@ -7,6 +7,5 @@ public class Demo {
 	public static void main(String[] args) {
 		Admin adminTest = new Admin();
 		adminTest.logIn();
-	}
-	
+	}  
 }

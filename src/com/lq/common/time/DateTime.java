@@ -1,9 +1,11 @@
 package com.lq.common.time;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 
-public class DateTime {
+public class DateTime implements Serializable{
 	private int year,month,day,hour,min;
 	
 	//¹¹Ôìº¯Êý
@@ -20,6 +22,13 @@ public class DateTime {
 		this.day = t.day;
 		this.hour = t.hour;
 		this.min = t.min;
+	}
+	public DateTime(Date t) {
+		this.year = t.getYear() + 1900;
+		this.month = t.getMonth() +1;
+		this.day = t.getDay();
+		this.hour = t.getHours();
+		this.min = t.getMinutes();
 	}
 	public DateTime(Timestamp value) {
 		int carry = 0;

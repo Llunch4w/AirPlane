@@ -6,7 +6,9 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import com.lq.client.Client;
 import com.lq.common.time.StayTime;
+import com.lq.method.SystemInform;
 import com.lq.model.Flight;
 import com.lq.sql.FlightUpdateDriver;
 
@@ -54,28 +56,28 @@ class BasicContentPanel extends JPanel{
 		tmp_tf_place.setBounds(10,40,100,20);
 		add(tmp_tf_place);
 		String realTime;
-		if(flight.getState().equals("计划")) {
-			realTime = flight.getStartTime().getPlanTime().toString();
-		}
-		else {
-			realTime = flight.getStartTime().getRealTime().toString();
-		}
+		realTime = flight.getStartTime().getRealTime().toString();
 		JLabel tmp_tf_time = new JLabel("预计起飞时间:" + realTime);
 		tmp_tf_time.setBounds(120,40,240,20);
 		add(tmp_tf_time);
 		JLabel tmp_transport;
+		System.out.println(flight.isTrans());
 		if(flight.isTrans()) {
 			tmp_transport = new JLabel("中转站:" + flight.getTransPlace());
 			tmp_transport.setBounds(10,70,300,20);
 			JLabel mid_arrive = new JLabel("中转到达时间:" + 
-							flight.getTransArriveTime());
+							flight.getTransArriveTime().getRealTime().toString());
 			mid_arrive.setBounds(10,100,300,20);
 			add(mid_arrive);
 			JLabel mid_leave = new JLabel("中转起飞时间:" + 
-					flight.getTransLeaveTime());
+					flight.getTransLeaveTime().getRealTime().toString());
 			mid_leave.setBounds(10,130,300,20);
 			add(mid_leave);
-			JLabel stayTime = new JLabel("停留:");
+			int min = flight.getTransLeaveTime().getRealTime().
+					sub(flight.getTransArriveTime().getRealTime());
+			StayTime stay = new StayTime(min);
+			JLabel stayTime = new JLabel(String.format("停留%d小时%d分钟",
+					stay.getHours(),stay.getMinutes()));
 			stayTime.setBounds(10,160,300,20);
 			add(stayTime);
 		}
@@ -207,8 +209,8 @@ class ModifyContentPanel extends JPanel{
 		send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				flight.getStartTime().setDelayReason(selectReason);
-//				new FlightUpdateDriver().delayUpdate(flight);
-				
+				new FlightUpdateDriver().delayUpdate(flight);
+				new SystemInform().inform(flight,message.getText());
 				JOptionPane.showMessageDialog(null,
 						"设置成功！且已向购买此航班的顾客发送延误信息");
 			}

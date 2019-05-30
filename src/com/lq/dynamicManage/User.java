@@ -8,10 +8,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class User {
+	private String ID;
 	private JFrame curWindow = null;
 	private Client client;
 	public Client getClient() {
 		return client;
+	}
+	public void setID(String ID) {
+		this.ID = ID;
+	}
+	public String getID() {
+		return ID;
 	}
 	public void toWindow(String name) {
 		if(name.equals("login")) {
@@ -31,6 +38,9 @@ public class User {
 		}
 		else if(name.equals("returnTicket page")) {
 			curWindow = new ReturnTicketFrame(this);
+		}
+		else if(name.equals("user page")) {			
+			curWindow = new UserFrame(this);
 		}
 		
 	}

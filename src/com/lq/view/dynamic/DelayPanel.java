@@ -40,10 +40,20 @@ public class DelayPanel extends JPanel implements ListenPanel{
 							System.out.println(item);
 							String tmp_s = (String)item;
 							String[] temp = tmp_s.split(" ");
-							Flight flight = new FlightSearchDriver()
-									.searchById_base(temp[0]).get(0);
-							FlightDetail detailPage = new FlightDetail(flight);
-							detailPage.showing(400, 600);
+							FlightSearchDriver driver = new FlightSearchDriver();
+							Flight flight = driver
+									.searchById_base(temp[0]);
+							driver.addDetail(flight);
+							if(flight.getState().equals("计划") ||
+									flight.getState().equals("延误")) {						
+								FlightDetail detailPage = new FlightDetail(flight);
+								detailPage.showing(400, 600);
+							}
+							else {
+								JOptionPane.showMessageDialog(null, 
+										String.format("当前航班状态为%s,不可进行设置！", 
+												flight.getState()));
+							}
 						}catch(Exception exc) {
 							break;
 						}
@@ -55,6 +65,9 @@ public class DelayPanel extends JPanel implements ListenPanel{
 			for(Flight f:flights) {			
 				listmode.addElement(new FlightSearchResultFormat().getFormat(f));
 			}
+		}
+		public void setResult(Flight flight) {
+			listmode.addElement(new FlightSearchResultFormat().getFormat(flight));
 		}
 	}
 	
@@ -90,9 +103,9 @@ public class DelayPanel extends JPanel implements ListenPanel{
 			JOptionPane.showMessageDialog(null,"查询条件过多!");
 		}
 		else if(!idSearchPanel.id.equals("")) {
-			ArrayList<Flight> res = 
+			Flight res = 
 				new FlightSearchDriver().searchById_base(idSearchPanel.id);
-			if(res.isEmpty()) {
+			if(res == null) {
 				idSearchPanel.addNoResult();
 			}
 			else {
